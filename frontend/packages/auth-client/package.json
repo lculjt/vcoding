@@ -1,0 +1,12 @@
+{
+  "name": "@vcoding/auth-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "前端认证客户端封装，后续承载登录态、Token、用户信息和跳转逻辑。",
+  "scripts": {
+    "build": "echo \"auth-client build placeholder\""
+  },
+  "dependencies": {
+    "@vcoding/shared": "workspace:*"
+  }
+}

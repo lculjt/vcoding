@@ -1,0 +1,15 @@
+{
+  "name": "@vcoding/portal-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "登录后的系统入口和工作台应用。",
+  "scripts": {
+    "build": "echo \"portal-web build placeholder\"",
+    "dev": "echo \"portal-web dev placeholder\""
+  },
+  "dependencies": {
+    "@vcoding/auth-client": "workspace:*",
+    "@vcoding/shared": "workspace:*",
+    "@vcoding/ui": "workspace:*"
+  }
+}

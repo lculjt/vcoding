@@ -1,0 +1,55 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .: {}
+
+  apps/auth-web:
+    dependencies:
+      '@vcoding/auth-client':
+        specifier: workspace:*
+        version: link:../../packages/auth-client
+      '@vcoding/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@vcoding/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+
+  apps/demo-system-web:
+    dependencies:
+      '@vcoding/auth-client':
+        specifier: workspace:*
+        version: link:../../packages/auth-client
+      '@vcoding/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@vcoding/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+
+  apps/portal-web:
+    dependencies:
+      '@vcoding/auth-client':
+        specifier: workspace:*
+        version: link:../../packages/auth-client
+      '@vcoding/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@vcoding/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+
+  packages/auth-client:
+    dependencies:
+      '@vcoding/shared':
+        specifier: workspace:*
+        version: link:../shared
+
+  packages/shared: {}
+
+  packages/ui: {}
