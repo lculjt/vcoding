@@ -3,7 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "description": "跨前端应用复用的通用 UI 组件包。",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "echo \"ui build placeholder\""
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "element-plus": "^2.9.1",
+    "vue": "^3.5.13"
   }
 }

@@ -1,0 +1,40 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: vcoding-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: vcoding
+      MYSQL_USER: vcoding
+      MYSQL_PASSWORD: vcoding
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - vcoding-mysql-data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: vcoding-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - vcoding-redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  vcoding-mysql-data:
+  vcoding-redis-data:

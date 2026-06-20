@@ -8,6 +8,10 @@
 
 本仓库是 vcoding 平台项目，目标是承载多个业务系统。所有系统共用统一用户中心，并通过唯一登录界面完成账号密码登录。登录成功后，用户再进入门户或具体业务系统。
 
+## 技术栈与架构规范
+
+涉及前端技术选型、后端技术选型、路由、状态管理、ORM、依赖同步、接口同步或新增系统架构时，必须先读取并遵守 `docs/architecture/technology-and-architecture.md`。
+
 ## 目录边界
 
 - `frontend/`：前端 monorepo，使用 pnpm workspace。
@@ -36,6 +40,13 @@
 - 统一用户中心能力放在 `backend/vcoding-auth`。
 - 统一入口、路由和鉴权边界放在 `backend/vcoding-gateway`。
 
+## 编码注释约定
+
+- Codex 编写或修改代码时，应补充必要的中文注释。
+- 注释优先覆盖业务规则、权限边界、验证码/登录流程、关键配置、非直观实现原因以及后续需要替换或扩展的位置。
+- 避免机械逐行注释，不为简单 getter/setter、直观赋值、常规框架注解等显而易见的代码添加冗余说明。
+- 注释必须与当前代码行为一致；修改逻辑时应同步更新相关注释。
+
 ## 统一登录边界
 
 - `frontend/apps/auth-web` 是唯一登录界面。
@@ -53,5 +64,6 @@ Codex 生成 Git commit message 时，必须先读取并遵守 `docs/codex-commi
 ```bash
 bash scripts/verify-structure.sh
 mvn -f backend/pom.xml validate
-pnpm -C frontend install --lockfile-only
+pnpm -C frontend install
+pnpm -C frontend build
 ```

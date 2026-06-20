@@ -1,8 +1,8 @@
 # vcoding
 
-vcoding 是一个面向多业务系统的平台型项目。项目计划支持多个系统共存，但所有系统共用统一用户中心，并通过唯一登录界面完成账号密码登录。用户登录成功后，再进入门户或具体业务系统。
+vcoding 是一个面向多业务系统的平台型项目。项目计划支持多个系统共存，但所有系统共用统一用户中心，并通过唯一登录界面完成账号密码登录或手机号验证码登录。用户登录成功后，再进入门户或具体业务系统。
 
-当前仓库处于初始化骨架阶段，重点是建立清晰的前后端目录边界和后续扩展约定。
+当前仓库已建立前后端工程骨架，并在 `vcoding-auth` 中落地统一用户中心的第一批接口能力，包括图形验证码、短信验证码、自助注册、登录、当前用户和退出登录。
 
 ## 项目结构
 
@@ -57,20 +57,56 @@ vcoding/
 - `backend/vcoding-gateway`：统一入口、路由和鉴权边界模块。
 - `backend/vcoding-system-demo`：业务系统后端示例模块。
 
-## 统一登录流程
+## 统一登录与认证接口
 
-长期目标中的登录边界如下：
+当前统一登录边界如下：
 
 1. 用户访问某个需要登录的业务系统。
 2. 前端应用或网关发现用户未登录。
 3. 用户跳转到 `auth-web`。
-4. `auth-web` 调用 `vcoding-auth` 完成账号密码登录。
+4. `auth-web` 调用 `vcoding-auth` 完成账号密码登录或手机号验证码登录。
 5. 登录成功后，用户回到原业务系统或进入 `portal-web`。
-6. 业务系统通过统一登录态识别当前用户。
+6. 后端通过统一登录态识别当前用户，业务系统只处理自身业务权限。
 
-当前版本只建立目录和模块骨架，不包含真实登录、权限、Token、数据库或网关实现。
+已落地的认证相关接口：
+
+```text
+GET  /api/auth/captcha/image
+POST /api/auth/sms/send
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/login/sms
+GET  /api/auth/me
+POST /api/auth/logout
+```
+
+登录成功后，`vcoding-auth` 通过 `Set-Cookie` 写入 `VCODING_TOKEN`。该 Cookie 使用 HttpOnly 模式，前端不读取 JWT 明文，后续请求通过浏览器自动携带登录态。
+
+接口文档由 springdoc-openapi 自动生成，本地启动 `vcoding-auth` 后可访问：
+
+```text
+Swagger UI: http://localhost:8080/swagger-ui/index.html
+OpenAPI JSON: http://localhost:8080/v3/api-docs
+```
+
+业务系统接口的统一鉴权边界后续放在 `vcoding-gateway` 或公共鉴权过滤器中。业务系统不应重复实现登录，只应基于当前登录用户做业务授权判断。
 
 ## 开发命令
+
+### 本地依赖
+
+第一阶段本地依赖 MySQL 和 Redis，可通过 Docker Compose 启动：
+
+```bash
+docker compose -f deploy/local/docker-compose.yml up -d
+```
+
+默认连接信息：
+
+```text
+MySQL: localhost:3306 / database vcoding / user vcoding / password vcoding
+Redis: localhost:6379
+```
 
 ### 结构验证
 
@@ -81,14 +117,34 @@ bash scripts/verify-structure.sh
 ### 前端
 
 ```bash
-pnpm -C frontend install --lockfile-only
+pnpm -C frontend install
 pnpm -C frontend build
+```
+
+前端应用开发端口：
+
+```text
+auth-web: localhost:5173
+portal-web: localhost:5174
+demo-system-web: localhost:5175
 ```
 
 ### 后端
 
 ```bash
 mvn -f backend/pom.xml validate
+```
+
+统一用户中心后端启动模块：
+
+```bash
+mvn -f backend/pom.xml -pl vcoding-auth spring-boot:run
+```
+
+启动后可通过 Swagger UI 查看和调试认证接口：
+
+```text
+http://localhost:8080/swagger-ui/index.html
 ```
 
 ## 新增系统约定

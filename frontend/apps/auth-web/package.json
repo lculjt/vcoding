@@ -4,12 +4,17 @@
   "private": true,
   "description": "统一登录前端应用，负责账号密码登录入口和登录成功后的跳转。",
   "scripts": {
-    "build": "echo \"auth-web build placeholder\"",
-    "dev": "echo \"auth-web dev placeholder\""
+    "build": "vite build",
+    "dev": "vite --host 0.0.0.0 --port 5173"
   },
   "dependencies": {
     "@vcoding/auth-client": "workspace:*",
     "@vcoding/shared": "workspace:*",
-    "@vcoding/ui": "workspace:*"
+    "@vcoding/ui": "workspace:*",
+    "axios": "^1.7.9",
+    "element-plus": "^2.9.1",
+    "pinia": "^2.3.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   }
 }

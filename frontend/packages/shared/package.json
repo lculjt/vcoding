@@ -3,7 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "description": "跨前端应用复用的通用类型、常量和工具包。",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "echo \"shared build placeholder\""
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
   }
 }

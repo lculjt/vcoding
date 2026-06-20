@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: vcoding-auth
+  profiles:
+    active: local
+
+server:
+  port: 8080
+
+vcoding:
+  auth:
+    cookie-name: VCODING_TOKEN
+    jwt-issuer: vcoding
+    jwt-secret: vcoding-local-development-secret-change-before-production-2026
+    jwt-ttl-seconds: 7200
+    cookie-path: /
+    cookie-secure: false
+    cookie-same-site: Lax
+  captcha:
+    image-code-length: 4
+    image-ttl-seconds: 300
+    sms-code-length: 6
+    sms-ttl-seconds: 300
+    sms-cooldown-seconds: 60
+    sms-daily-phone-limit: 10
+    sms-daily-ip-limit: 50
+    sms-verify-fail-limit: 5

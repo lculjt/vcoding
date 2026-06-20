@@ -4,12 +4,17 @@
   "private": true,
   "description": "登录后的系统入口和工作台应用。",
   "scripts": {
-    "build": "echo \"portal-web build placeholder\"",
-    "dev": "echo \"portal-web dev placeholder\""
+    "build": "vite build",
+    "dev": "vite --host 0.0.0.0 --port 5174"
   },
   "dependencies": {
     "@vcoding/auth-client": "workspace:*",
     "@vcoding/shared": "workspace:*",
-    "@vcoding/ui": "workspace:*"
+    "@vcoding/ui": "workspace:*",
+    "axios": "^1.7.9",
+    "element-plus": "^2.9.1",
+    "pinia": "^2.3.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   }
 }

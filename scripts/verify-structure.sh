@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+failures=0
+
+check_path() {
+  local path="$1"
+  if [[ ! -e "$path" ]]; then
+    echo "缺少: $path"
+    failures=$((failures + 1))
+  fi
+}
+
+check_contains() {
+  local file="$1"
+  local text="$2"
+  if [[ ! -f "$file" ]]; then
+    echo "缺少: $file"
+    failures=$((failures + 1))
+    return
+  fi
+
+  if ! grep -Fq "$text" "$file"; then
+    echo "内容缺失: $file -> $text"
+    failures=$((failures + 1))
+  fi
+}
+
+required_paths=(
+  "AGENTS.md"
+  "README.md"
+  "docs/architecture/technology-and-architecture.md"
+  "frontend/package.json"
+  "frontend/pnpm-workspace.yaml"
+  "frontend/apps/auth-web/package.json"
+  "frontend/apps/auth-web/src/main.ts"
+  "frontend/apps/auth-web/src/router/index.ts"
+  "frontend/apps/portal-web/package.json"
+  "frontend/apps/portal-web/src/main.ts"
+  "frontend/apps/portal-web/src/router/index.ts"
+  "frontend/apps/demo-system-web/package.json"
+  "frontend/apps/demo-system-web/src/main.ts"
+  "frontend/apps/demo-system-web/src/router/index.ts"
+  "frontend/packages/ui/src/index.ts"
+  "frontend/packages/auth-client/src/index.ts"
+  "frontend/packages/shared/src/index.ts"
+  "backend/pom.xml"
+  "backend/vcoding-common/pom.xml"
+  "backend/vcoding-common/src/main/java/com/vcoding/common/response/ApiResponse.java"
+  "backend/vcoding-common/src/main/java/com/vcoding/common/response/ErrorCode.java"
+  "backend/vcoding-common/src/main/java/com/vcoding/common/exception/BusinessException.java"
+  "backend/vcoding-common/src/main/java/com/vcoding/common/exception/GlobalExceptionHandler.java"
+  "backend/vcoding-common/src/main/java/com/vcoding/common/trace/TraceIdHolder.java"
+  "backend/vcoding-common/src/main/java/com/vcoding/common/trace/TraceIdFilter.java"
+  "backend/vcoding-auth/pom.xml"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/VcodingAuthApplication.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/CaptchaController.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/AuthAccountController.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/HealthController.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/dto/CurrentUserResponse.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/dto/RegisterRequest.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/dto/RegisterResponse.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/dto/LoginRequest.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/dto/LoginResponse.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/dto/SmsLoginRequest.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/captcha/ImageCaptchaService.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/captcha/SmsCodeService.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/session/AuthSessionService.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/session/JwtTokenService.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/user/PasswordHashService.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/user/UserRegisterService.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/config/AuthProperties.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/config/OpenApiConfig.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/domain/sms/SmsScene.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/domain/sms/SmsSender.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/domain/user/UserStatus.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/infrastructure/sms/ConsoleSmsSender.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/infrastructure/persistence/entity/UserEntity.java"
+  "backend/vcoding-auth/src/main/java/com/vcoding/auth/infrastructure/persistence/mapper/UserMapper.java"
+  "backend/vcoding-auth/src/main/resources/db/migration/V1__init_user_center.sql"
+  "backend/vcoding-auth/src/main/resources/application.yml"
+  "backend/vcoding-auth/src/main/resources/application-local.yml"
+  "backend/vcoding-gateway/pom.xml"
+  "backend/vcoding-system-demo/pom.xml"
+  "deploy/local/docker-compose.yml"
+)
+
+for path in "${required_paths[@]}"; do
+  check_path "$path"
+done
+
+check_contains "frontend/pnpm-workspace.yaml" "apps/*"
+check_contains "frontend/pnpm-workspace.yaml" "packages/*"
+check_contains "frontend/apps/auth-web/package.json" "vite"
+check_contains "frontend/apps/auth-web/package.json" "vue"
+check_contains "frontend/apps/portal-web/package.json" "pinia"
+check_contains "frontend/apps/demo-system-web/package.json" "vue-router"
+check_contains "frontend/packages/auth-client/package.json" "typescript"
+check_contains "backend/pom.xml" "spring-boot-dependencies"
+check_contains "backend/pom.xml" "mybatis-plus-spring-boot3-starter"
+check_contains "backend/vcoding-common/src/main/java/com/vcoding/common/response/ApiResponse.java" "traceId"
+check_contains "backend/vcoding-common/src/main/java/com/vcoding/common/exception/GlobalExceptionHandler.java" "@RestControllerAdvice"
+check_contains "backend/vcoding-common/src/main/java/com/vcoding/common/trace/TraceIdHolder.java" "X-Trace-Id"
+check_contains "backend/vcoding-auth/pom.xml" "spring-boot-starter-web"
+check_contains "backend/vcoding-auth/pom.xml" "spring-boot-starter-data-redis"
+check_contains "backend/vcoding-auth/pom.xml" "springdoc-openapi-starter-webmvc-ui"
+check_contains "backend/vcoding-auth/pom.xml" "jjwt-api"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/VcodingAuthApplication.java" "scanBasePackages = \"com.vcoding\""
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/config/OpenApiConfig.java" "vcoding 统一用户中心接口"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/CaptchaController.java" "/captcha/image"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/CaptchaController.java" "/sms/send"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/AuthAccountController.java" "/register"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/AuthAccountController.java" "/login"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/AuthAccountController.java" "/login/sms"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/AuthAccountController.java" "/me"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/AuthAccountController.java" "/logout"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/session/JwtTokenService.java" "Jwts.builder"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/session/AuthSessionService.java" "HttpOnly Cookie"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/session/AuthSessionService.java" "SmsScene.LOGIN"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/user/PasswordHashService.java" "PBKDF2WithHmacSHA256"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/user/UserRegisterService.java" "SmsScene.REGISTER"
+check_contains "backend/vcoding-auth/src/main/resources/db/migration/V1__init_user_center.sql" "CREATE TABLE uc_user"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/captcha/ImageCaptchaService.java" "captcha:image:"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/application/captcha/SmsCodeService.java" "captcha:sms:"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/infrastructure/sms/ConsoleSmsSender.java" "ConsoleSmsSender"
+check_contains "backend/vcoding-auth/src/main/java/com/vcoding/auth/api/HealthController.java" "/health"
+check_contains "deploy/local/docker-compose.yml" "mysql"
+check_contains "deploy/local/docker-compose.yml" "redis"
+check_contains "README.md" "docker compose -f deploy/local/docker-compose.yml up -d"
+
+if [[ "$failures" -gt 0 ]]; then
+  echo "结构验证失败: ${failures} 项问题"
+  exit 1
+fi
+
+echo "结构验证通过"

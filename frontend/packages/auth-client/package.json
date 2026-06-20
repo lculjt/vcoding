@@ -3,10 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "description": "前端认证客户端封装，后续承载登录态、Token、用户信息和跳转逻辑。",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "echo \"auth-client build placeholder\""
+    "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@vcoding/shared": "workspace:*"
+    "@vcoding/shared": "workspace:*",
+    "axios": "^1.7.9"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
   }
 }
