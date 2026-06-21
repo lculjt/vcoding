@@ -12,6 +12,10 @@
 
 涉及前端技术选型、后端技术选型、路由、状态管理、ORM、依赖同步、接口同步或新增系统架构时，必须先读取并遵守 `docs/architecture/technology-and-architecture.md`。
 
+## 前端视觉规范
+
+涉及登录页、门户、业务系统、后台管理页面、通用 UI 组件、样式主题或视觉改版时，必须先读取并遵守 `docs/design/visual-guidelines.md`。平台整体采用开发者工具风格：专业、克制、可信，带适度技术感，避免营销站式大渐变、大插画和过度装饰。
+
 ## 目录边界
 
 - `frontend/`：前端 monorepo，使用 pnpm workspace。

@@ -1,0 +1,53 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--vc-text-main);
+  background: var(--vc-bg-subtle);
+  font-family: var(--vc-font-sans);
+  font-size: var(--vc-font-size-body);
+  line-height: var(--vc-line-height-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+a {
+  color: var(--vc-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--vc-primary-hover);
+}
+
+#app {
+  min-height: 100vh;
+}
+
+::selection {
+  color: var(--vc-text-inverse);
+  background: var(--vc-primary);
+}

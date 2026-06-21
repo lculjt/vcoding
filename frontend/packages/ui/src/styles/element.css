@@ -1,0 +1,85 @@
+:root {
+  --el-color-primary: var(--vc-primary);
+  --el-color-primary-light-3: #60a5fa;
+  --el-color-primary-light-5: #93c5fd;
+  --el-color-primary-light-7: #bfdbfe;
+  --el-color-primary-light-8: #dbeafe;
+  --el-color-primary-light-9: #eff6ff;
+  --el-color-primary-dark-2: var(--vc-primary-hover);
+  --el-color-success: var(--vc-success);
+  --el-color-warning: var(--vc-warning);
+  --el-color-danger: var(--vc-danger);
+  --el-color-info: var(--vc-info);
+  --el-text-color-primary: var(--vc-text-strong);
+  --el-text-color-regular: var(--vc-text-main);
+  --el-text-color-secondary: var(--vc-text-muted);
+  --el-border-color: var(--vc-border);
+  --el-border-color-light: var(--vc-border);
+  --el-border-radius-base: var(--vc-radius-control);
+  --el-font-family: var(--vc-font-sans);
+  --el-transition-duration: var(--vc-duration-normal);
+}
+
+.el-button {
+  --el-button-size: 36px;
+  min-height: 36px;
+  border-radius: var(--vc-radius-control);
+  font-weight: 500;
+}
+
+.el-button--large {
+  --el-button-size: 40px;
+  min-height: 40px;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--vc-primary);
+  --el-button-border-color: var(--vc-primary);
+  --el-button-hover-bg-color: var(--vc-primary-hover);
+  --el-button-hover-border-color: var(--vc-primary-hover);
+  --el-button-active-bg-color: var(--vc-primary-active);
+  --el-button-active-border-color: var(--vc-primary-active);
+}
+
+.el-input__wrapper {
+  border-radius: var(--vc-radius-control);
+  box-shadow: 0 0 0 1px var(--vc-border) inset;
+  transition:
+    box-shadow var(--vc-duration-fast) var(--vc-ease-standard),
+    background-color var(--vc-duration-fast) var(--vc-ease-standard);
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow:
+    0 0 0 1px var(--vc-primary) inset,
+    var(--vc-shadow-focus);
+}
+
+.el-input__inner {
+  color: var(--vc-text-strong);
+}
+
+.el-form-item__label {
+  color: var(--vc-text-main);
+  font-size: var(--vc-font-size-label);
+  font-weight: 500;
+  line-height: var(--vc-line-height-label);
+}
+
+.el-tabs__item {
+  color: var(--vc-text-muted);
+  font-weight: 500;
+}
+
+.el-tabs__item.is-active {
+  color: var(--vc-primary);
+}
+
+.el-tabs__active-bar {
+  background-color: var(--vc-primary);
+}
+
+.el-card {
+  border-color: var(--vc-border);
+  border-radius: var(--vc-radius-panel);
+}

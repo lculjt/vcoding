@@ -1,0 +1,82 @@
+.vc-page {
+  min-height: 100vh;
+  color: var(--vc-text-main);
+  background: var(--vc-bg-subtle);
+}
+
+.vc-panel {
+  border: 1px solid var(--vc-border);
+  border-radius: var(--vc-radius-panel);
+  background: var(--vc-bg-surface);
+}
+
+.vc-auth-card {
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: var(--vc-radius-panel);
+  background: rgba(15, 23, 42, 0.74);
+  box-shadow: var(--vc-shadow-card);
+  backdrop-filter: blur(18px);
+}
+
+.vc-muted-text {
+  color: var(--vc-text-muted);
+}
+
+.vc-inverse-muted-text {
+  color: var(--vc-text-inverse-muted);
+}
+
+.vc-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vc-space-1);
+  padding: 0;
+  color: var(--vc-primary);
+  background: transparent;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.vc-link-button:hover {
+  color: var(--vc-primary-hover);
+}
+
+.vc-status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--vc-radius-round);
+  background: var(--vc-accent);
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.16);
+}
+
+.vc-tech-grid-bg {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(37, 99, 235, 0.24), transparent 32%),
+    radial-gradient(circle at 76% 68%, rgba(20, 184, 166, 0.16), transparent 30%),
+    linear-gradient(135deg, #0f172a 0%, #111827 52%, #0b1120 100%);
+}
+
+.vc-tech-grid-bg::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at 50% 50%, black, transparent 74%);
+}
+
+.vc-tech-grid-bg::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(115deg, transparent 0 34%, rgba(37, 99, 235, 0.11) 34.2% 34.5%, transparent 34.7%),
+    linear-gradient(35deg, transparent 0 62%, rgba(20, 184, 166, 0.1) 62.2% 62.5%, transparent 62.7%);
+}

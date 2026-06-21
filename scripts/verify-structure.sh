@@ -20,7 +20,7 @@ check_contains() {
     return
   fi
 
-  if ! grep -Fq "$text" "$file"; then
+  if ! grep -Fq -- "$text" "$file"; then
     echo "内容缺失: $file -> $text"
     failures=$((failures + 1))
   fi
@@ -30,6 +30,7 @@ required_paths=(
   "AGENTS.md"
   "README.md"
   "docs/architecture/technology-and-architecture.md"
+  "docs/design/visual-guidelines.md"
   "frontend/package.json"
   "frontend/pnpm-workspace.yaml"
   "frontend/apps/auth-web/package.json"
@@ -42,6 +43,11 @@ required_paths=(
   "frontend/apps/demo-system-web/src/main.ts"
   "frontend/apps/demo-system-web/src/router/index.ts"
   "frontend/packages/ui/src/index.ts"
+  "frontend/packages/ui/src/styles/tokens.css"
+  "frontend/packages/ui/src/styles/base.css"
+  "frontend/packages/ui/src/styles/element.css"
+  "frontend/packages/ui/src/styles/components.css"
+  "frontend/packages/ui/src/styles/index.css"
   "frontend/packages/auth-client/src/index.ts"
   "frontend/packages/shared/src/index.ts"
   "backend/pom.xml"
@@ -106,11 +112,23 @@ done
 
 check_contains "frontend/pnpm-workspace.yaml" "apps/*"
 check_contains "frontend/pnpm-workspace.yaml" "packages/*"
+check_contains "AGENTS.md" "docs/design/visual-guidelines.md"
+check_contains "docs/architecture/technology-and-architecture.md" "docs/design/visual-guidelines.md"
+check_contains "docs/design/visual-guidelines.md" "开发者工具风格"
+check_contains "docs/design/visual-guidelines.md" "--vc-primary"
 check_contains "frontend/apps/auth-web/package.json" "vite"
 check_contains "frontend/apps/auth-web/package.json" "vue"
+check_contains "frontend/apps/auth-web/src/main.ts" "@vcoding/ui/styles"
 check_contains "frontend/apps/portal-web/package.json" "pinia"
+check_contains "frontend/apps/portal-web/src/main.ts" "@vcoding/ui/styles"
 check_contains "frontend/apps/demo-system-web/package.json" "vue-router"
+check_contains "frontend/apps/demo-system-web/src/main.ts" "@vcoding/ui/styles"
 check_contains "frontend/packages/auth-client/package.json" "typescript"
+check_contains "frontend/packages/ui/package.json" "\"./styles\""
+check_contains "frontend/packages/ui/src/styles/tokens.css" "--vc-primary"
+check_contains "frontend/packages/ui/src/styles/components.css" ".vc-tech-grid-bg"
+check_contains "frontend/packages/ui/src/styles/element.css" "--el-color-primary"
+check_contains "docs/design/visual-guidelines.md" "frontend/packages/ui/src/styles"
 check_contains "backend/pom.xml" "spring-boot-dependencies"
 check_contains "backend/pom.xml" "spring-cloud-dependencies"
 check_contains "backend/pom.xml" "mybatis-plus-spring-boot3-starter"

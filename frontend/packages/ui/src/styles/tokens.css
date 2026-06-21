@@ -1,0 +1,72 @@
+:root {
+  color-scheme: light;
+
+  --vc-bg-page: #0f172a;
+  --vc-bg-canvas: #111827;
+  --vc-bg-surface: #ffffff;
+  --vc-bg-subtle: #f8fafc;
+  --vc-bg-muted: #eef2f7;
+
+  --vc-primary: #2563eb;
+  --vc-primary-hover: #1d4ed8;
+  --vc-primary-active: #1e40af;
+  --vc-primary-soft: #dbeafe;
+  --vc-accent: #14b8a6;
+  --vc-accent-hover: #0f766e;
+  --vc-accent-soft: #ccfbf1;
+
+  --vc-text-strong: #0f172a;
+  --vc-text-main: #1e293b;
+  --vc-text-muted: #64748b;
+  --vc-text-subtle: #94a3b8;
+  --vc-text-inverse: #f8fafc;
+  --vc-text-inverse-muted: #cbd5e1;
+
+  --vc-border: #dbe3ee;
+  --vc-border-strong: #cbd5e1;
+  --vc-border-inverse: rgba(148, 163, 184, 0.28);
+
+  --vc-success: #16a34a;
+  --vc-warning: #d97706;
+  --vc-danger: #dc2626;
+  --vc-info: #2563eb;
+
+  --vc-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --vc-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+  --vc-font-size-title: 28px;
+  --vc-line-height-title: 36px;
+  --vc-font-size-heading: 20px;
+  --vc-line-height-heading: 28px;
+  --vc-font-size-panel-title: 16px;
+  --vc-line-height-panel-title: 24px;
+  --vc-font-size-body: 14px;
+  --vc-line-height-body: 22px;
+  --vc-font-size-label: 13px;
+  --vc-line-height-label: 20px;
+  --vc-font-size-caption: 12px;
+  --vc-line-height-caption: 18px;
+
+  --vc-space-1: 4px;
+  --vc-space-2: 8px;
+  --vc-space-3: 12px;
+  --vc-space-4: 16px;
+  --vc-space-5: 20px;
+  --vc-space-6: 24px;
+  --vc-space-8: 32px;
+  --vc-space-10: 40px;
+  --vc-space-12: 48px;
+
+  --vc-radius-control: 6px;
+  --vc-radius-panel: 8px;
+  --vc-radius-round: 999px;
+
+  --vc-shadow-card: 0 18px 48px rgba(15, 23, 42, 0.18);
+  --vc-shadow-float: 0 24px 72px rgba(15, 23, 42, 0.24);
+  --vc-shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.18);
+
+  --vc-duration-fast: 150ms;
+  --vc-duration-normal: 220ms;
+  --vc-duration-slow: 320ms;
+  --vc-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}

@@ -6,6 +6,8 @@
 
 当前阶段先确立架构约定，不要求一次性引入所有依赖。实际依赖应随着对应功能落地逐步加入。
 
+前端视觉风格、色彩、排版、组件观感和页面布局基线统一遵守 `docs/design/visual-guidelines.md`。
+
 ## 总体架构
 
 vcoding 是“统一用户中心 + 多业务系统”的平台型项目。所有业务系统共用统一账号体系，只有一个登录入口。
@@ -160,6 +162,7 @@ const request = axios.create({
 - 复杂组件样式使用 SCSS。
 - 单文件组件样式优先使用 `scoped`。
 - 第一阶段不引入 Tailwind CSS 或 UnoCSS。
+- 平台视觉风格统一采用 `docs/design/visual-guidelines.md` 中定义的开发者工具风格。
 
 ### 前端依赖同步
 
