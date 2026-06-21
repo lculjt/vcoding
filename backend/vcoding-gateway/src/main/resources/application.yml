@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: vcoding-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: vcoding-auth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
+        - id: vcoding-system-demo
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/demo/**
+
+server:
+  port: 8080
+
+vcoding:
+  auth:
+    cookie-name: VCODING_TOKEN
+    jwt-issuer: vcoding
+    jwt-secret: vcoding-local-development-secret-change-before-production-2026
+    jwt-ttl-seconds: 7200
+    cookie-path: /
+    cookie-secure: false
+    cookie-same-site: Lax
+  gateway:
+    internal-secret: vcoding-local-gateway-internal-secret-change-before-production-2026
+    internal-timestamp-ttl-seconds: 120

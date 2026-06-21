@@ -1,4 +1,4 @@
-package com.vcoding.auth.config;
+package com.vcoding.common.auth.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "vcoding.auth")
-public class AuthProperties {
+public class VcodingAuthProperties {
     /**
      * 统一登录态 Cookie 名称，前端只依赖该 Cookie 是否随请求自动携带。
      */
     private String cookieName = "VCODING_TOKEN";
 
     /**
-     * JWT 签发方，用于避免其他系统签发的 Token 被误用到当前用户中心。
+     * JWT 签发方，用于避免其他系统签发的 Token 被误用到当前平台。
      */
     private String jwtIssuer = "vcoding";
 

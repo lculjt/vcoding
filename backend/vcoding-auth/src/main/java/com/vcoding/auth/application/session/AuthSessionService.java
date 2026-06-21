@@ -7,22 +7,22 @@ import com.vcoding.auth.api.dto.LoginResponse;
 import com.vcoding.auth.api.dto.SmsLoginRequest;
 import com.vcoding.auth.application.captcha.SmsCodeService;
 import com.vcoding.auth.application.user.PasswordHashService;
-import com.vcoding.auth.config.AuthProperties;
 import com.vcoding.auth.domain.sms.SmsScene;
 import com.vcoding.auth.domain.user.UserStatus;
 import com.vcoding.auth.infrastructure.persistence.entity.UserEntity;
 import com.vcoding.auth.infrastructure.persistence.mapper.UserMapper;
+import com.vcoding.common.auth.CookieTokenResolver;
+import com.vcoding.common.auth.CurrentUser;
+import com.vcoding.common.auth.JwtService;
+import com.vcoding.common.auth.config.VcodingAuthProperties;
 import com.vcoding.common.exception.BusinessException;
 import com.vcoding.common.response.ErrorCode;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 
@@ -31,8 +31,9 @@ import java.time.Duration;
 public class AuthSessionService {
     private final UserMapper userMapper;
     private final PasswordHashService passwordHashService;
-    private final JwtTokenService jwtTokenService;
-    private final AuthProperties authProperties;
+    private final JwtService jwtService;
+    private final VcodingAuthProperties authProperties;
+    private final CookieTokenResolver cookieTokenResolver;
     private final SmsCodeService smsCodeService;
 
     /**
@@ -67,7 +68,7 @@ public class AuthSessionService {
      * 统一签发登录态，保证账号密码登录和短信登录写入同一种 Cookie。
      */
     private LoginResponse issueLoginResponse(UserEntity user, HttpServletResponse response) {
-        String token = jwtTokenService.createToken(user);
+        String token = jwtService.createToken(toJwtCurrentUser(user));
         response.addHeader(HttpHeaders.SET_COOKIE, buildLoginCookie(token).toString());
 
         return new LoginResponse(toCurrentUser(user), authProperties.getJwtTtlSeconds());
@@ -77,10 +78,9 @@ public class AuthSessionService {
      * 获取当前登录用户。后续门户和业务系统可以用该接口判断是否已登录。
      */
     public CurrentUserResponse currentUser(HttpServletRequest request) {
-        String token = readTokenFromCookie(request);
-        Claims claims = jwtTokenService.parseClaims(token);
-        Long userId = parseUserId(claims.getSubject());
-        UserEntity user = userMapper.selectById(userId);
+        String token = cookieTokenResolver.resolve(request);
+        CurrentUser currentUser = jwtService.parseToken(token);
+        UserEntity user = userMapper.selectById(currentUser.userId());
         if (user == null) {
             throw new BusinessException(ErrorCode.AUTH_NOT_LOGIN);
         }
@@ -124,30 +124,17 @@ public class AuthSessionService {
         }
     }
 
-    private String readTokenFromCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            throw new BusinessException(ErrorCode.AUTH_NOT_LOGIN);
-        }
-
-        for (Cookie cookie : cookies) {
-            if (authProperties.getCookieName().equals(cookie.getName()) && StringUtils.hasText(cookie.getValue())) {
-                return cookie.getValue();
-            }
-        }
-        throw new BusinessException(ErrorCode.AUTH_NOT_LOGIN);
-    }
-
-    private Long parseUserId(String subject) {
-        try {
-            return Long.valueOf(subject);
-        } catch (NumberFormatException exception) {
-            throw new BusinessException(ErrorCode.AUTH_INVALID_TOKEN);
-        }
-    }
-
     private CurrentUserResponse toCurrentUser(UserEntity user) {
         return new CurrentUserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getPhone(),
+                Boolean.TRUE.equals(user.getAdminFlag())
+        );
+    }
+
+    private CurrentUser toJwtCurrentUser(UserEntity user) {
+        return new CurrentUser(
                 user.getId(),
                 user.getUsername(),
                 user.getPhone(),

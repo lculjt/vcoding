@@ -213,7 +213,7 @@ backend/
 
 - `vcoding-common`：通用返回结构、异常、基础工具、公共常量。
 - `vcoding-auth`：用户、账号密码登录、Token、当前用户、角色权限。
-- `vcoding-gateway`：统一入口边界，后续可演进为真实网关。
+- `vcoding-gateway`：基于 Spring Cloud Gateway 的统一入口、路由和第一层鉴权边界。
 - `vcoding-<system-name>`：业务系统后端模块。
 
 ### 后端包结构规范
@@ -428,7 +428,7 @@ Max-Age: 与 JWT 过期时间一致
 
 所有业务系统必须复用统一用户中心，不单独实现账号密码登录、手机号验证码登录或独立用户表。
 
-推荐请求链路：
+当前请求链路：
 
 ```text
 浏览器
@@ -439,18 +439,25 @@ vcoding-auth 签发 JWT HttpOnly Cookie
   ↓
 portal-web 或业务系统前端
   ↓
-vcoding-gateway 或公共鉴权过滤器校验登录态
+vcoding-gateway 校验登录态并签发内部用户头
   ↓
-vcoding-<system-name> 处理业务接口
+vcoding-<system-name> 校验内部用户头并处理业务接口
 ```
 
-统一认证层负责判断“用户是谁、是否已登录、账号是否可用”：
+Gateway 第一层负责判断“用户是谁、是否已登录”：
 
 - 从 `VCODING_TOKEN` Cookie 读取 JWT。
 - 校验 JWT 签名和过期时间。
 - 解析 `userId` 等登录身份信息。
-- 必要时查询用户状态，确认用户未被禁用。
-- 将当前用户写入请求上下文，供业务模块读取。
+- 清理外部请求中伪造的内部用户头。
+- 向下游服务追加签名后的内部用户头。
+
+业务服务第二层负责判断“请求是否来自可信 Gateway”：
+
+- 校验内部用户头是否完整。
+- 校验内部用户头签名。
+- 校验内部用户头时间戳是否在有效窗口内。
+- 将当前用户写入 `AuthContext`，供业务模块读取。
 
 业务系统只负责判断“当前用户能不能做当前业务操作”：
 
@@ -466,15 +473,25 @@ backend/vcoding-common
 ├── auth/
 │   ├── CurrentUser
 │   ├── AuthContext
-│   └── AuthRequiredFilter
+│   ├── JwtService
+│   ├── GatewayUserHeaderService
+│   └── InternalGatewayUserFilter
 └── response/
     └── ErrorCode
 
 backend/vcoding-gateway
-└── 统一入口鉴权和路由转发
+└── Spring Cloud Gateway 路由转发和第一层鉴权
 ```
 
-第一阶段可以先在公共过滤器中完成登录态校验，再逐步演进到网关统一处理。无论采用哪种实现，业务模块都不直接解析 Cookie，不直接校验 JWT 签名，而是通过公共上下文读取当前用户。
+业务模块不直接解析 Cookie，不直接校验 JWT 签名，而是通过公共上下文读取当前用户。内部用户头只在 Gateway 到业务服务之间使用，外部请求中携带的同名头必须在 Gateway 中先清理。
+
+本地端口约定：
+
+```text
+vcoding-gateway: 8080
+vcoding-auth: 8081
+vcoding-system-demo: 8082
+```
 
 ### 验证码
 

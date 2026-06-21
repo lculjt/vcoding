@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: vcoding-system-demo
+
+server:
+  port: 8082
+
+vcoding:
+  gateway:
+    internal-secret: vcoding-local-gateway-internal-secret-change-before-production-2026
+    internal-timestamp-ttl-seconds: 120
