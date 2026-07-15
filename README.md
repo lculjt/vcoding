@@ -1,6 +1,6 @@
 # vcoding
 
-vcoding 是一个面向多业务系统的平台型项目。项目计划支持多个系统共存，但所有系统共用统一用户中心，并通过唯一登录界面完成账号密码登录或手机号验证码登录。用户登录成功后，再进入门户或具体业务系统。
+vcoding 是一个面向多业务系统的平台型项目。项目计划支持多个系统共存，但所有系统共用统一用户中心，并通过唯一登录界面完成账号密码登录或手机号验证码登录。用户登录成功后，回到原目标系统；没有目标系统时进入默认业务系统。
 
 当前仓库已建立前后端工程骨架，并在 `vcoding-auth` 中落地统一用户中心的第一批接口能力，包括图形验证码、短信验证码、自助注册、登录、当前用户和退出登录。同时，`vcoding-gateway` 已接入 Spring Cloud Gateway，作为业务接口统一入口。
 
@@ -38,7 +38,7 @@ vcoding/
 ### 应用
 
 - `frontend/apps/auth-web`：唯一登录界面。所有需要登录的系统在未认证时都应跳转到这里。
-- `frontend/apps/portal-web`：登录后的系统入口或工作台。
+- `frontend/apps/portal-web`：可选的登录后系统入口或工作台。
 - `frontend/apps/demo-system-web`：业务系统前端示例，用于说明后续系统扩展方式。
 
 ### 共享包
@@ -65,7 +65,7 @@ vcoding/
 2. 前端应用或网关发现用户未登录。
 3. 用户跳转到 `auth-web`。
 4. `auth-web` 调用 `vcoding-auth` 完成账号密码登录或手机号验证码登录。
-5. 登录成功后，用户回到原业务系统或进入 `portal-web`。
+5. 登录成功后，用户回到原业务系统；没有 `redirect` 时进入默认业务系统。
 6. 后端通过统一登录态识别当前用户，业务系统只处理自身业务权限。
 
 已落地的认证相关接口：
@@ -78,6 +78,7 @@ POST /api/auth/login
 POST /api/auth/login/sms
 GET  /api/auth/me
 POST /api/auth/logout
+GET  /api/auth/password/public-key
 ```
 
 登录成功后，`vcoding-auth` 通过 `Set-Cookie` 写入 `VCODING_TOKEN`。该 Cookie 使用 HttpOnly 模式，前端不读取 JWT 明文，后续请求通过浏览器自动携带登录态。

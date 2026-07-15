@@ -10,12 +10,17 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts"
     },
+    "./overlay": {
+      "types": "./src/overlay/index.ts",
+      "import": "./src/overlay/index.ts"
+    },
     "./styles": "./src/styles/index.css"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "vue-tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "element-plus": "^2.9.1",
     "vue": "^3.5.13"
   }

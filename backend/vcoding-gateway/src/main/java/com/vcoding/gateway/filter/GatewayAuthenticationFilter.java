@@ -40,7 +40,9 @@ public class GatewayAuthenticationFilter implements GlobalFilter, Ordered {
             "/api/auth/login",
             "/api/auth/login/sms",
             "/api/auth/logout",
-            "/api/auth/health"
+            "/api/auth/health",
+            "/api/auth/password/public-key",
+            "/api/auth/password/encrypt-for-test"
     );
 
     private final VcodingAuthProperties authProperties;

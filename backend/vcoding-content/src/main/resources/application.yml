@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: vcoding-content
+  profiles:
+    active: local
+
+server:
+  port: 8083
+
+vcoding:
+  gateway:
+    internal-secret: vcoding-local-gateway-internal-secret-change-before-production-2026
+    internal-timestamp-ttl-seconds: 120
+  content:
+    ai:
+      mode: ${VCODING_CONTENT_AI_MODE:mock}
+      base-url: ${VCODING_CONTENT_AI_BASE_URL:https://api.openai.com/v1}
+      api-key: ${VCODING_CONTENT_AI_API_KEY:}
+      model: ${VCODING_CONTENT_AI_MODEL:gpt-4o-mini}
+      endpoint-path: ${VCODING_CONTENT_AI_ENDPOINT_PATH:/chat/completions}
+      timeout-seconds: ${VCODING_CONTENT_AI_TIMEOUT_SECONDS:60}
+      temperature: ${VCODING_CONTENT_AI_TEMPERATURE:0.7}
+      json-mode: ${VCODING_CONTENT_AI_JSON_MODE:true}
+      max-tokens: ${VCODING_CONTENT_AI_MAX_TOKENS:4096}

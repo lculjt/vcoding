@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.vcoding.auth.api.dto.RegisterRequest;
 import com.vcoding.auth.api.dto.RegisterResponse;
 import com.vcoding.auth.application.captcha.SmsCodeService;
+import com.vcoding.auth.application.crypto.PasswordCryptoService;
 import com.vcoding.auth.domain.sms.SmsScene;
 import com.vcoding.auth.domain.user.UserStatus;
 import com.vcoding.auth.infrastructure.persistence.entity.UserEntity;
@@ -20,6 +21,7 @@ public class UserRegisterService {
     private final UserMapper userMapper;
     private final PasswordHashService passwordHashService;
     private final SmsCodeService smsCodeService;
+    private final PasswordCryptoService passwordCryptoService;
 
     /**
      * 开放用户自助注册。注册前先校验短信验证码，再检查账号唯一性并保存密码哈希。
@@ -36,7 +38,8 @@ public class UserRegisterService {
         UserEntity user = new UserEntity();
         user.setUsername(username);
         user.setPhone(phone);
-        user.setPasswordHash(passwordHashService.hash(request.getPassword()));
+        String rawPassword = passwordCryptoService.decrypt(request.getPasswordCiphertext(), request.getPasswordKeyId());
+        user.setPasswordHash(passwordHashService.hash(rawPassword));
         user.setStatus(UserStatus.ENABLED.getCode());
         user.setAdminFlag(false);
         userMapper.insert(user);

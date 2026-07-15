@@ -22,10 +22,14 @@ public class RegisterRequest {
     @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式错误")
     private String phone;
 
-    @Schema(description = "登录密码，长度 8 到 64 位", example = "Vcoding@123")
-    @NotBlank(message = "密码不能为空")
-    @Size(min = 8, max = 64, message = "密码长度必须在 8 到 64 位之间")
-    private String password;
+    @Schema(description = "Base64 编码的 RSA-OAEP 密码密文", example = "m3n...")
+    @NotBlank(message = "密码密文不能为空")
+    @Size(max = 512, message = "密码密文长度不能超过 512 位")
+    private String passwordCiphertext;
+
+    @Schema(description = "密码加密公钥 ID", example = "202606260001")
+    @NotBlank(message = "密码加密公钥 ID 不能为空")
+    private String passwordKeyId;
 
     @Schema(description = "注册场景短信验证码", example = "123456")
     @NotBlank(message = "短信验证码不能为空")

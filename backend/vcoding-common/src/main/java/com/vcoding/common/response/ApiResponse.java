@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
+    private static final int SUCCESS_CODE = 0;
+
     private final int code;
     private final String message;
     private final T data;
@@ -18,7 +20,7 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(
-                ErrorCode.SUCCESS.getHttpStatus(),
+                SUCCESS_CODE,
                 ErrorCode.SUCCESS.getMessage(),
                 data,
                 TraceIdHolder.getTraceId()

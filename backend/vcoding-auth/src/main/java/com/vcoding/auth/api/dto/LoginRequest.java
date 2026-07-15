@@ -14,8 +14,12 @@ public class LoginRequest {
     @NotBlank(message = "账号不能为空")
     private String account;
 
-    @Schema(description = "登录密码", example = "Vcoding@123")
-    @NotBlank(message = "密码不能为空")
-    @Size(min = 8, max = 64, message = "密码长度必须在 8 到 64 位之间")
-    private String password;
+    @Schema(description = "Base64 编码的 RSA-OAEP 密码密文", example = "m3n...")
+    @NotBlank(message = "密码密文不能为空")
+    @Size(max = 512, message = "密码密文长度不能超过 512 位")
+    private String passwordCiphertext;
+
+    @Schema(description = "密码加密公钥 ID", example = "202606260001")
+    @NotBlank(message = "密码加密公钥 ID 不能为空")
+    private String passwordKeyId;
 }

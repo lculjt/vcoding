@@ -12,6 +12,10 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/api/demo/**
+        - id: vcoding-content
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/content/**
 
 server:
   port: 8080

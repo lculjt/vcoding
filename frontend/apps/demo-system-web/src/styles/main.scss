@@ -3,6 +3,13 @@
   padding: var(--vc-space-10);
 }
 
+.demo-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--vc-space-4);
+}
+
 .eyebrow {
   margin: 0 0 var(--vc-space-2);
   color: var(--vc-primary);

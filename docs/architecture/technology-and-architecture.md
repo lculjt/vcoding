@@ -10,21 +10,21 @@
 
 ## 总体架构
 
-vcoding 是“统一用户中心 + 多业务系统”的平台型项目。所有业务系统共用统一账号体系，只有一个登录入口。
+vcoding 是“统一用户中心 + 多业务系统”的平台型项目。所有业务系统共用统一账号体系，只有一个登录入口。门户是可选入口，不是登录后的必经页面。
 
 ```text
 auth-web
   ↓
 vcoding-auth
   ↓
-portal-web
-  ↓
 业务系统 xxx-web / vcoding-xxx
+  ↕
+可选 portal-web
 ```
 
 - `auth-web`：唯一登录前端。
 - `vcoding-auth`：统一用户中心后端。
-- `portal-web`：登录后的系统入口。
+- `portal-web`：可选的登录后系统入口或工作台。
 - `xxx-web`：具体业务系统前端。
 - `vcoding-xxx`：具体业务系统后端模块。
 
@@ -90,9 +90,11 @@ src/router/
 认证跳转规则：
 
 - `auth-web` 不依赖业务系统路由，只负责登录和回跳。
-- `portal-web` 和业务系统进入前必须检查登录态。
+- `portal-web` 如启用，和业务系统一样，进入前必须检查登录态。
 - 未登录时统一跳转到 `auth-web`。
 - 跳转登录时携带 `redirect` 参数，登录成功后回到原目标地址。
+- 如果登录页没有收到 `redirect`，默认进入 `/demo` 或 `VITE_DEFAULT_LOGIN_REDIRECT` 配置的默认业务系统。
+- 非统一域名部署时，`auth-web` 只能回跳到白名单来源，白名单通过 `VITE_ALLOWED_REDIRECT_ORIGINS` 配置。
 
 本地开发时，各前端应用通过 Vite proxy 将 `/api` 代理到后端，尽量模拟同源请求，降低 HttpOnly Cookie 与 CORS 调试成本。
 
@@ -143,6 +145,7 @@ src/api/
 - 统一 401 处理。
 - 统一错误模型。
 - 统一接口类型。
+- 统一通过 Axios 请求/响应拦截器处理出参和入参，业务接口函数不重复解包 `ApiResponse`。
 
 由于第一阶段采用 JWT + HttpOnly Cookie，前端请求封装必须开启凭证携带：
 
@@ -152,6 +155,29 @@ const request = axios.create({
   withCredentials: true
 })
 ```
+
+共享请求包和业务客户端包应按职责拆分目录，避免类型、请求实例和业务方法堆在同一个入口文件：
+
+```text
+src/
+├── api/
+│   ├── index.ts
+│   └── <domain>.ts
+├── request/
+│   ├── index.ts
+│   └── http.ts
+├── types/
+│   ├── index.ts
+│   └── <domain>.ts
+└── index.ts
+```
+
+- `types/`：只放接口类型、枚举类型和领域数据结构，不写请求逻辑。
+- `request/`：只放 Axios 实例、请求拦截器、响应拦截器、错误归一化和通用请求工具。
+- `api/`：只放业务接口函数，例如登录、注册、验证码、当前用户等。
+- `index.ts`：只做统一导出，不直接写业务逻辑、请求实例或复杂类型定义。
+- 应用私有的表单类型、页面状态类型可以保留在应用自己的 `src/types/`；跨应用复用的类型应沉淀到对应 workspace 包的 `src/types/`。
+- 新增接口时优先新增或复用 `types/<domain>.ts` 和 `api/<domain>.ts`，不要把新类型和新请求直接追加到包入口文件。
 
 ### 样式规范
 
@@ -182,6 +208,8 @@ const request = axios.create({
 - 前端 lint 和 format 配置应在 workspace 内统一维护。
 - 后续可新增 `frontend/packages/eslint-config` 统一复用规则。
 - 后续可新增 `frontend/packages/tsconfig` 统一复用 TypeScript 配置。
+- TypeScript 类型定义必须与业务逻辑分离；共享包统一放在 `src/types/`，应用私有类型统一放在应用内 `src/types/`。
+- 业务函数、请求封装、状态管理和组件逻辑不得与大型类型声明长期混写在同一个文件中。
 - 后端先使用 IDE 默认格式化，并以 Maven validate 作为最低验证。
 
 ## 后端技术栈
@@ -427,6 +455,34 @@ Max-Age: 与 JWT 过期时间一致
 
 使用 Cookie 后需要关注 CSRF。第一阶段使用 `SameSite=Lax`，并要求修改类接口只接受 JSON 请求。后续如出现跨主域部署，再补充 CSRF Token、CORS credentials 白名单和更严格的 Cookie 策略。
 
+### 密码传输加密
+
+第一阶段账号密码登录和注册接口不直接传输明文密码。前端先调用 `vcoding-auth` 的密码公钥接口获取 RSA 公钥，再使用 RSA-OAEP-SHA256 加密密码，提交登录或注册接口时携带：
+
+```text
+passwordCiphertext
+passwordKeyId
+```
+
+当前阶段实现策略：
+
+- `vcoding-auth` 服务启动时在内存中生成一对 RSA 公私钥。
+- `/api/auth/password/public-key` 返回当前公钥、`keyId`、算法和剩余有效期。
+- 登录和注册接口根据 `passwordKeyId` 校验当前密钥，再用内存私钥解密。
+- 私钥不返回给前端，也不落库。
+- 本地和开发测试可使用非生产环境的密码加密辅助接口生成 Postman 测试密文。
+
+当前策略适合本地开发和单实例测试，但不作为生产最终方案。
+
+后续生产环境优化项：
+
+- 私钥应来自 KMS、Vault、配置中心、环境变量或安全文件，不应由服务每次启动临时生成。
+- 多实例部署时，所有 `vcoding-auth` 实例必须共享同一批 `keyId` 与私钥，否则可能出现 A 实例发公钥、B 实例无法解密的问题。
+- 公钥接口继续返回 `keyId`，登录和注册接口按 `keyId` 查找对应私钥。
+- 支持密钥轮换：当前密钥用于加密新请求，旧密钥在过渡期内只用于解密旧请求，过渡期结束后移除。
+- 公钥有效期应缩短并允许前端按 `expiresInSeconds` 重新获取。
+- 生产日志不得打印明文密码、密码密文、私钥、公钥完整内容或解密异常细节。
+
 ### 统一认证与业务系统鉴权
 
 所有业务系统必须复用统一用户中心，不单独实现账号密码登录、手机号验证码登录或独立用户表。
@@ -566,7 +622,7 @@ SmsSender
 
 ```json
 {
-  "code": "SUCCESS",
+  "code": 0,
   "message": "成功",
   "data": {},
   "traceId": "..."
@@ -575,19 +631,20 @@ SmsSender
 
 成功响应：
 
-- `code` 为 `SUCCESS`。
+- `code` 固定为 `0`。
 - `message` 为 `成功`。
 - `data` 为实际数据。
 - `traceId` 为当前请求追踪 ID。
 
 失败响应：
 
-- `code` 为业务错误码。
+- `code` 为非 `0` 错误码；第一阶段可复用 HTTP 状态码数值，后续再细化独立业务错误码。
 - `message` 为可读错误信息。
 - `data` 为 `null` 或错误详情。
 - `traceId` 为当前请求追踪 ID。
 
 异常处理统一使用 `GlobalExceptionHandler`。Controller 不直接捕获业务异常，不直接返回 `Map`，统一返回 `ApiResponse<T>`。
+前端请求层必须通过 Axios 响应拦截器统一判断 `code === 0` 为成功，业务接口函数不重复判断成功码。
 
 `vcoding-common` 推荐承载：
 

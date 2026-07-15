@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/vcoding?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: vcoding
+    password: vcoding
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  flyway:
+    enabled: true
+    # 与 auth 等模块共用 vcoding 库，但各自维护独立迁移历史表
+    table: flyway_schema_history_content
+    # 库中已有其他模块表时自动 baseline，避免启动失败
+    baseline-on-migrate: true
+    # baseline 到 0，确保本模块 V1 迁移仍会执行
+    baseline-version: 0
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

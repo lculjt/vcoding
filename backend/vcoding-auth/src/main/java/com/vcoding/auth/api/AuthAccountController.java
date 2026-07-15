@@ -3,9 +3,11 @@ package com.vcoding.auth.api;
 import com.vcoding.auth.api.dto.CurrentUserResponse;
 import com.vcoding.auth.api.dto.LoginRequest;
 import com.vcoding.auth.api.dto.LoginResponse;
+import com.vcoding.auth.api.dto.PasswordPublicKeyResponse;
 import com.vcoding.auth.api.dto.RegisterRequest;
 import com.vcoding.auth.api.dto.RegisterResponse;
 import com.vcoding.auth.api.dto.SmsLoginRequest;
+import com.vcoding.auth.application.crypto.PasswordCryptoService;
 import com.vcoding.auth.application.session.AuthSessionService;
 import com.vcoding.auth.application.user.UserRegisterService;
 import com.vcoding.common.response.ApiResponse;
@@ -28,6 +30,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthAccountController {
     private final UserRegisterService userRegisterService;
     private final AuthSessionService authSessionService;
+    private final PasswordCryptoService passwordCryptoService;
+
+    /**
+     * 获取登录页密码传输加密公钥。前端提交密码前必须先用该公钥加密。
+     */
+    @Operation(summary = "获取密码加密公钥", description = "返回用于登录、注册密码传输加密的 RSA-OAEP 公钥。")
+    @GetMapping("/password/public-key")
+    public ApiResponse<PasswordPublicKeyResponse> passwordPublicKey() {
+        return ApiResponse.success(passwordCryptoService.currentPublicKey());
+    }
 
     /**
      * 用户自助注册入口。管理员创建账号后续单独做后台接口，避免和开放注册混在一起。

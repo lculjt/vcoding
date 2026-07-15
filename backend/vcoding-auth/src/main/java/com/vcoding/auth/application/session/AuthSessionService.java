@@ -6,6 +6,7 @@ import com.vcoding.auth.api.dto.LoginRequest;
 import com.vcoding.auth.api.dto.LoginResponse;
 import com.vcoding.auth.api.dto.SmsLoginRequest;
 import com.vcoding.auth.application.captcha.SmsCodeService;
+import com.vcoding.auth.application.crypto.PasswordCryptoService;
 import com.vcoding.auth.application.user.PasswordHashService;
 import com.vcoding.auth.domain.sms.SmsScene;
 import com.vcoding.auth.domain.user.UserStatus;
@@ -35,6 +36,7 @@ public class AuthSessionService {
     private final VcodingAuthProperties authProperties;
     private final CookieTokenResolver cookieTokenResolver;
     private final SmsCodeService smsCodeService;
+    private final PasswordCryptoService passwordCryptoService;
 
     /**
      * 账号密码登录。account 支持用户名或手机号，成功后写入统一 HttpOnly Cookie。
@@ -44,7 +46,8 @@ public class AuthSessionService {
         UserEntity user = findByUsernameOrPhone(account);
         ensureEnabled(user);
 
-        if (!passwordHashService.matches(request.getPassword(), user.getPasswordHash())) {
+        String rawPassword = passwordCryptoService.decrypt(request.getPasswordCiphertext(), request.getPasswordKeyId());
+        if (!passwordHashService.matches(rawPassword, user.getPasswordHash())) {
             throw new BusinessException(ErrorCode.AUTH_INVALID_USERNAME_OR_PASSWORD);
         }
 

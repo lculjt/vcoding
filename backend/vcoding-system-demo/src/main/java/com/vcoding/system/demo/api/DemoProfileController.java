@@ -1,6 +1,6 @@
 package com.vcoding.system.demo.api;
 
-import com.vcoding.common.auth.AuthContext;
+import com.vcoding.common.auth.CurrentLoginUser;
 import com.vcoding.common.auth.CurrentUser;
 import com.vcoding.common.response.ApiResponse;
 import com.vcoding.system.demo.api.dto.DemoProfileResponse;
@@ -16,8 +16,7 @@ public class DemoProfileController {
      * 受保护示例接口。用于验证 Gateway 鉴权和服务内部二次校验是否同时生效。
      */
     @GetMapping("/profile")
-    public ApiResponse<DemoProfileResponse> profile() {
-        CurrentUser currentUser = AuthContext.requireLogin();
+    public ApiResponse<DemoProfileResponse> profile(@CurrentLoginUser CurrentUser currentUser) {
         return ApiResponse.success(new DemoProfileResponse(
                 "vcoding-system-demo",
                 currentUser.userId(),
