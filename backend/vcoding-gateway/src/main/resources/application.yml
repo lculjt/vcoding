@@ -16,6 +16,10 @@ spring:
           uri: http://localhost:8083
           predicates:
             - Path=/api/content/**
+        - id: vcoding-global-trend-monitor
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/global-trend/**
 
 server:
   port: 8080

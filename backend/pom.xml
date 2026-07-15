@@ -18,6 +18,7 @@
         <module>vcoding-gateway</module>
         <module>vcoding-system-demo</module>
         <module>vcoding-content</module>
+        <module>vcoding-global-trend-monitor</module>
     </modules>
 
     <properties>

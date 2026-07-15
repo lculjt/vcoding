@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: vcoding-global-trend-monitor
+
+server:
+  port: 8084
+
+vcoding:
+  gateway:
+    internal-secret: ${VCODING_GATEWAY_INTERNAL_SECRET:vcoding-local-gateway-internal-secret-change-before-production-2026}
+    internal-timestamp-ttl-seconds: ${VCODING_GATEWAY_INTERNAL_TIMESTAMP_TTL_SECONDS:120}

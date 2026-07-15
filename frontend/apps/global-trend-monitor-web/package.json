@@ -1,0 +1,27 @@
+{
+  "name": "@vcoding/global-trend-monitor-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "海外热点聚合观察台前端应用。",
+  "scripts": {
+    "build": "vue-tsc -p tsconfig.json && vite build",
+    "dev": "vite --host 0.0.0.0 --port 5177"
+  },
+  "dependencies": {
+    "@vcoding/auth-client": "workspace:*",
+    "@vcoding/shared": "workspace:*",
+    "@vcoding/ui": "workspace:*",
+    "@element-plus/icons-vue": "^2.3.1",
+    "element-plus": "^2.9.1",
+    "pinia": "^2.3.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "4.6.2",
+    "sass": "1.69.7",
+    "typescript": "^5.7.2",
+    "vite": "4.5.14",
+    "vue-tsc": "^2.2.0"
+  }
+}
