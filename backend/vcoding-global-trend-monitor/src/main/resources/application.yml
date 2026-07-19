@@ -1,6 +1,8 @@
 spring:
   application:
     name: vcoding-global-trend-monitor
+  profiles:
+    active: local
 
 server:
   port: 8084

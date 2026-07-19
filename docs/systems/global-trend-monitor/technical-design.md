@@ -576,6 +576,7 @@ region, language, limit
 | `GET` | `/api/global-trend/sources` | 管理员 | 查询数据源状态和非敏感配置 |
 | `PUT` | `/api/global-trend/sources/{code}` | 管理员 | 更新启用状态和采集参数 |
 | `POST` | `/api/global-trend/sources/{code}/collect` | 管理员 | 手动触发采集 |
+| `POST` | `/api/global-trend/sources/{code}/test` | 管理员 | 小样本验证外部接口，不写入热点表 |
 | `GET` | `/api/global-trend/collect-jobs` | 管理员 | 分页查询任务日志 |
 | `GET` | `/api/global-trend/collect-jobs/{id}` | 管理员 | 查询任务详情 |
 

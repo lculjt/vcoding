@@ -7,6 +7,7 @@
 - [一期需求分析文档](phase-1-requirement-analysis.md)
 - [一期任务文档](phase-1-task-plan.md)
 - [一期技术设计文档](technical-design.md)
+- [一期数据源验证记录](phase-1-source-validation.md)
 
 ## 文档职责
 
@@ -38,5 +39,12 @@
 - 去重、热度评分和日聚合口径
 - 热点、图表、数据源和任务接口设计
 - 图表交互、可观测性和合规存储边界
+
+`phase-1-source-validation.md` 是首批数据源验证记录，维护：
+
+- Hacker News、GitHub、YouTube 的官方接口和字段口径
+- 认证、限流和配置要求
+- 最小验证接口和实测结果
+- 正式 connector 开发前的结论和待办
 
 后续进入开发时，可在本目录继续补充接口示例、数据源验证记录、部署说明和迭代复盘。

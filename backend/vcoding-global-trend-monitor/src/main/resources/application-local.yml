@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: ${VCODING_GTM_DATASOURCE_URL:jdbc:mysql://localhost:3306/vcoding?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
+    username: ${VCODING_GTM_DATASOURCE_USERNAME:vcoding}
+    password: ${VCODING_GTM_DATASOURCE_PASSWORD:vcoding}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  flyway:
+    enabled: true
+    # 与其他业务模块共用数据库，但每个模块使用独立的迁移历史表。
+    table: flyway_schema_history_global_trend
+    baseline-on-migrate: true
+    baseline-version: 0
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+vcoding:
+  global-trend:
+    sources:
+      http:
+        connect-timeout-millis: ${VCODING_GTM_HTTP_CONNECT_TIMEOUT_MILLIS:5000}
+        read-timeout-millis: ${VCODING_GTM_HTTP_READ_TIMEOUT_MILLIS:10000}
+      hacker-news:
+        base-url: ${VCODING_HACKER_NEWS_BASE_URL:https://hacker-news.firebaseio.com/v0}
+        sample-size: ${VCODING_HACKER_NEWS_SAMPLE_SIZE:5}
+      github:
+        base-url: ${VCODING_GITHUB_API_BASE_URL:https://api.github.com}
+        token: ${VCODING_GITHUB_TOKEN:}
+        search-query: ${VCODING_GITHUB_SEARCH_QUERY:stars:>1000}
+        sample-size: ${VCODING_GITHUB_SAMPLE_SIZE:5}
+      youtube:
+        base-url: ${VCODING_YOUTUBE_API_BASE_URL:https://www.googleapis.com/youtube/v3}
+        api-key: ${VCODING_YOUTUBE_API_KEY:}
+        region-code: ${VCODING_YOUTUBE_REGION_CODE:US}
+        video-category-id: ${VCODING_YOUTUBE_VIDEO_CATEGORY_ID:}
+        sample-size: ${VCODING_YOUTUBE_SAMPLE_SIZE:5}
