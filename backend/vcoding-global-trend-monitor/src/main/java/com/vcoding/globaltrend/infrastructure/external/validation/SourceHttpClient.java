@@ -49,6 +49,14 @@ public class SourceHttpClient {
         }
     }
 
+    /**
+     * 第三方 HTTP 调用结果。失败时也会返回对象，避免 connector 直接处理不同异常类型。
+     *
+     * @param statusCode HTTP 状态码，网络异常且没有响应时为 0
+     * @param body 响应体文本，网络异常时可能为空
+     * @param headers 响应头，网络异常时为空集合
+     * @param errorMessage RestClient 捕获到的异常摘要
+     */
     public record HttpResult(int statusCode, String body, HttpHeaders headers, String errorMessage) {
         public boolean is2xxSuccessful() {
             return statusCode >= 200 && statusCode < 300;

@@ -11,3 +11,9 @@ vcoding:
   gateway:
     internal-secret: ${VCODING_GATEWAY_INTERNAL_SECRET:vcoding-local-gateway-internal-secret-change-before-production-2026}
     internal-timestamp-ttl-seconds: ${VCODING_GATEWAY_INTERNAL_TIMESTAMP_TTL_SECONDS:120}
+  global-trend:
+    collect:
+      schedule:
+        enabled: ${VCODING_GTM_COLLECT_SCHEDULE_ENABLED:false}
+        cron: ${VCODING_GTM_COLLECT_SCHEDULE_CRON:0 0 3 * * *}
+        zone: ${VCODING_GTM_COLLECT_SCHEDULE_ZONE:Asia/Shanghai}

@@ -19,6 +19,7 @@ public class SourceValidationService {
     private final Map<String, SourceValidator> validators;
 
     public SourceValidationService(List<SourceValidator> sourceValidators) {
+        // Spring 注入所有 SourceValidator 实现，这里按 sourceCode 建索引，接口调用时直接定位验证器。
         this.validators = sourceValidators.stream()
                 .collect(Collectors.toUnmodifiableMap(
                         validator -> validator.sourceCode().toLowerCase(Locale.ROOT),
@@ -27,6 +28,7 @@ public class SourceValidationService {
     }
 
     public SourceValidationResult validate(String sourceCode) {
+        // 数据源编码统一转小写，避免前端传入 GitHub、GITHUB 等大小写差异导致误判不支持。
         String normalizedCode = sourceCode.toLowerCase(Locale.ROOT);
         SourceValidator validator = validators.get(normalizedCode);
         if (validator == null) {

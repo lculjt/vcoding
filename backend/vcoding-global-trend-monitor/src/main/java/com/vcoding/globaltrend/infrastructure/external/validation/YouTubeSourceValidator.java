@@ -43,6 +43,7 @@ public class YouTubeSourceValidator implements SourceValidator {
         Instant startedAt = Instant.now();
         GlobalTrendSourceProperties.YouTube youtube = properties.getYoutube();
         if (!StringUtils.hasText(youtube.getApiKey())) {
+            // 未配置 Key 时直接返回可读失败结果，不发起外部请求，避免误导为网络问题。
             return ValidationResultFactory.failure(
                     SOURCE_CODE,
                     0,
@@ -53,6 +54,7 @@ public class YouTubeSourceValidator implements SourceValidator {
             );
         }
 
+        // videos.list + chart=mostPopular 是一期验证 YouTube 热门榜字段的最小请求。
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(trimTrailingSlash(youtube.getBaseUrl()) + "/videos")
                 .queryParam("part", "snippet,statistics,contentDetails")
@@ -60,6 +62,7 @@ public class YouTubeSourceValidator implements SourceValidator {
                 .queryParam("regionCode", youtube.getRegionCode())
                 .queryParam("maxResults", normalizeSampleSize(youtube.getSampleSize()))
                 .queryParam("key", youtube.getApiKey());
+        // 分类 ID 可选；为空时验证地区综合热门。
         if (StringUtils.hasText(youtube.getVideoCategoryId())) {
             builder.queryParam("videoCategoryId", youtube.getVideoCategoryId());
         }
@@ -94,6 +97,7 @@ public class YouTubeSourceValidator implements SourceValidator {
                         "YouTube 返回中缺少 items 数组"
                 );
             }
+            // YouTube 字段有嵌套结构，这里只记录关键字段是否出现，不保存完整视频响应。
             Set<String> observedFields = observedFields(items, EXPECTED_FIELDS);
             List<String> missingFields = EXPECTED_FIELDS.stream()
                     .filter(field -> !observedFields.contains(field))

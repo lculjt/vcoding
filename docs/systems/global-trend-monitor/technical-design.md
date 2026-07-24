@@ -15,7 +15,7 @@
 | 数据库 | MySQL 8，Flyway 维护迁移脚本，MyBatis-Plus 访问 |
 | 缓存 | 一期只用于短期任务锁、限流和重复触发保护，不缓存完整热点数据 |
 | 认证 | 复用 `vcoding-auth`、`vcoding-gateway` 和 `vcoding-common`，不建立独立登录体系 |
-| 首批数据源 | YouTube、Hacker News、GitHub |
+| 首批数据源 | YouTube、GitHub |
 | 采集方式 | 官方 API、开放接口或明确允许的 RSS/开放数据；按数据源 connector 隔离 |
 | 任务方式 | 手动触发 + 每日定时，单数据源失败不阻断其他数据源 |
 | 图表方案 | 前端优先评估 Apache ECharts；后端提供统一、可比较的聚合指标 |
@@ -40,7 +40,7 @@ vcoding-global-trend-monitor
   ├─ infrastructure：MyBatis-Plus、外部 API、任务调度、缓存
   └─ config：数据源、任务、内部 Gateway 鉴权和 OpenAPI 配置
       ├─ MySQL：热点、指标快照、日聚合、用户操作、任务日志
-      └─ 外部平台：YouTube / Hacker News / GitHub
+      └─ 外部平台：YouTube / GitHub
 ```
 
 ### 3.1 后端包结构
@@ -69,7 +69,6 @@ com.vcoding.globaltrend
 ├── infrastructure
 │   ├── external/
 │   │   ├── youtube/
-│   │   ├── hackernews/
 │   │   └── github/
 │   ├── persistence/
 │   │   ├── entity/
@@ -149,7 +148,7 @@ id, code, name, platformType, contentType, enabled,
 region, language, config, lastSuccessAt, lastFailureAt
 ```
 
-`code` 是稳定的机器标识，例如 `youtube`、`hacker-news`、`github`。`platformType` 用于图表分组，`contentType` 用于列表筛选。
+`code` 是稳定的机器标识，例如 `youtube`、`github`。`platformType` 用于图表分组，`contentType` 用于列表筛选。
 
 数据源状态：
 
@@ -391,15 +390,14 @@ connector 不负责：
 - 生成中文摘要。
 - 直接决定热点是否展示。
 
-### 7.3 三个首批 connector
+### 7.3 两个首批 connector
 
 | 数据源 | 主要内容 | 一期采集参数 | 重点指标 |
 | --- | --- | --- | --- |
 | YouTube | 视频 | 地区、分类、时间窗口、分页 | 播放、点赞、评论 |
-| Hacker News | 帖子/链接 | Top/Best/New、分页、时间窗口 | 分数、评论 |
-| GitHub | 仓库 | 搜索关键词、语言、更新时间 | Star、Fork、Issue |
+| GitHub | 仓库 | 编程语言、自然语言、日/周/月时间范围 | Star、Fork、周期新增 Star |
 
-采集参数由 `gtm_source.config_json` 管理，代码只提供默认值和校验，不把地区、关键词和分页大小硬编码在 Controller 中。
+采集参数由 `gtm_source.config_json` 管理，代码只提供默认值和校验，不把地区、语言、时间范围和分页大小硬编码在 Controller 中。GitHub 一期按官网 Trending HTML 页面低频解析实现，不使用非官方 JSON API。
 
 ### 7.4 失败和重试
 
@@ -642,7 +640,7 @@ region, language, limit
 
 1. 创建 Maven 子模块和 Vue 应用骨架，接入 Gateway 内部鉴权。
 2. 创建 Flyway 基础表和 MyBatis-Plus 实体、Mapper。
-3. 先完成 Hacker News connector，再完成 GitHub 和 YouTube connector。
+3. 先完成 GitHub 和 YouTube connector。
 4. 完成采集任务、幂等入库、指标快照和热度分。
 5. 完成热点列表、详情、收藏和任务日志。
 6. 完成日聚合和图表接口，再封装前端图表组件。
@@ -655,7 +653,7 @@ region, language, limit
 - [ ] 未登录请求会通过统一登录页回跳，业务模块不重复实现登录。
 - [ ] Gateway 用户头校验和用户数据隔离有效。
 - [ ] Flyway 可以在空库完成一期表结构创建。
-- [ ] YouTube、Hacker News、GitHub 采集失败互不影响，重复执行不重复插入。
+- [ ] YouTube、GitHub 采集失败互不影响，重复执行不重复插入。
 - [ ] 原始指标和规范化指标分开保存，图表接口没有混合不可比原始指标。
 - [ ] 热度分包含版本号或等价的可追溯规则标识。
 - [ ] 图表返回数据时间、更新时间和数据不足标记。

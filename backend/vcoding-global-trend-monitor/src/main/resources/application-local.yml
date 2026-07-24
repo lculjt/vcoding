@@ -23,13 +23,11 @@ vcoding:
       http:
         connect-timeout-millis: ${VCODING_GTM_HTTP_CONNECT_TIMEOUT_MILLIS:5000}
         read-timeout-millis: ${VCODING_GTM_HTTP_READ_TIMEOUT_MILLIS:10000}
-      hacker-news:
-        base-url: ${VCODING_HACKER_NEWS_BASE_URL:https://hacker-news.firebaseio.com/v0}
-        sample-size: ${VCODING_HACKER_NEWS_SAMPLE_SIZE:5}
       github:
-        base-url: ${VCODING_GITHUB_API_BASE_URL:https://api.github.com}
-        token: ${VCODING_GITHUB_TOKEN:}
-        search-query: ${VCODING_GITHUB_SEARCH_QUERY:stars:>1000}
+        trending-base-url: ${VCODING_GITHUB_TRENDING_BASE_URL:https://github.com/trending}
+        trending-language: ${VCODING_GITHUB_TRENDING_LANGUAGE:}
+        spoken-language-code: ${VCODING_GITHUB_TRENDING_SPOKEN_LANGUAGE_CODE:}
+        since: ${VCODING_GITHUB_TRENDING_SINCE:daily}
         sample-size: ${VCODING_GITHUB_SAMPLE_SIZE:5}
       youtube:
         base-url: ${VCODING_YOUTUBE_API_BASE_URL:https://www.googleapis.com/youtube/v3}

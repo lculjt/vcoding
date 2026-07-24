@@ -8,7 +8,6 @@ const currentUsername = computed(() => authStore.user?.username || '已登录用
 
 const sourceCards = [
   { name: 'YouTube', status: '待接入', type: '视频热点' },
-  { name: 'Hacker News', status: '待接入', type: '技术讨论' },
   { name: 'GitHub', status: '待接入', type: '项目趋势' }
 ]
 </script>
@@ -72,7 +71,7 @@ const sourceCards = [
           <p class="panel-copy">当前先完成统一登录、系统路由和数据源接入边界。采集任务、热点列表和图表模块将在后续阶段逐步开放。</p>
           <div class="metric-row">
             <div>
-              <strong>3</strong>
+              <strong>2</strong>
               <span>首批数据源</span>
             </div>
             <div>

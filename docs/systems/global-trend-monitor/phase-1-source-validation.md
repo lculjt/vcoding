@@ -2,7 +2,7 @@
 
 ## 1. 验证范围
 
-本文记录一期首批数据源的最小接口验证结果。验证接口只读取少量公开数据，返回字段、数量、认证状态和限流摘要，不写入 `gtm_trend_item`、`gtm_metric_snapshot` 或采集任务表。
+本文记录数据源的最小接口验证结果。当前一期正式范围只保留 YouTube 和 GitHub；Hacker News 的验证结论作为二期预研材料保留，不再计入一期验收和运行范围。
 
 验证时间：2026-07-19
 
@@ -16,24 +16,22 @@
 
 | 数据源 | 验证接口 | 认证 | 主要字段 |
 | --- | --- | --- | --- |
-| Hacker News | `GET /v0/topstories.json` + `GET /v0/item/{id}.json` | 无需认证 | `id`、`type`、`by`、`time`、`title`、`url`、`score`、`descendants` |
-| GitHub | `GET /search/repositories` | 可匿名，也支持 Bearer Token | `id`、`full_name`、`html_url`、`description`、`language`、`stargazers_count`、`forks_count`、`created_at`、`updated_at` |
+| GitHub | `GET /trending/{language}?since={daily|weekly|monthly}&spoken_language_code={code}` | 无需认证 | 仓库名、描述、编程语言、总 Star、Fork、周期新增 Star |
 | YouTube | `GET /youtube/v3/videos` | API Key | `id`、`snippet.title`、`snippet.channelId`、`snippet.publishedAt`、`snippet.categoryId`、`statistics.viewCount`、`statistics.likeCount`、`statistics.commentCount` |
 
 官方资料：
 
-- [Hacker News API](https://github.com/HackerNews/API)
+- [GitHub Trending](https://github.com/trending)
 - [GitHub REST API rate limits](https://docs.github.com/en/rest/rate-limit/rate-limit)
 - [YouTube videos.list](https://developers.google.com/youtube/v3/docs/videos/list)
 - [YouTube videos implementation](https://developers.google.com/youtube/v3/guides/implementation/videos)
 
 ## 3. 实现方式
 
-后端新增统一 `SourceValidator` 接口和三个验证器：
+后端新增统一 `SourceValidator` 接口和两个一期验证器：
 
 ```text
 SourceValidationService
-  ├── HackerNewsSourceValidator
   ├── GitHubSourceValidator
   └── YouTubeSourceValidator
 ```
@@ -58,14 +56,14 @@ SourceValidationService
 安全约束：
 
 - YouTube API Key 只从 `VCODING_YOUTUBE_API_KEY` 环境变量读取。
-- GitHub Token 只从 `VCODING_GITHUB_TOKEN` 环境变量读取。
+- GitHub Trending HTML 当前无需 Token；采集条件只从本地或部署环境变量读取。
 - 错误响应不返回第三方原始响应，不返回包含 Key 的请求 URL。
 - 日志只记录数据源、成功状态、HTTP 状态、数量和耗时。
-- 验证器最多读取少量样本：Hacker News 和 GitHub 默认 5 条，YouTube 默认 5 条。
+- 验证器最多读取少量样本：GitHub 默认 5 条，YouTube 默认 5 条。
 
 ## 4. 实测结果
 
-### Hacker News
+### Hacker News（二期预研记录）
 
 - 结果：通过。
 - HTTP 状态：`200`。
@@ -73,17 +71,17 @@ SourceValidationService
 - 认证：`NONE`。
 - 字段：需求字段全部出现。
 - 限流：接口文档未声明固定限流值，当前结果记录为 `UNREPORTED`。
-- 结论：可以进入 connector 正式开发，采用“先取 ID 列表，再按 ID 读取 item”的两步模式。
+- 结论：接口可用，但已从一期正式范围移出；二期恢复时可采用“先取 ID 列表，再按 ID 读取 item”的两步模式。
 
 ### GitHub
 
 - 结果：通过。
 - HTTP 状态：`200`。
 - 样本数量：`5`。
-- 认证：当前使用匿名请求。
+- 认证：无需认证。
 - 字段：需求字段全部出现。
-- 实测限流摘要：`remaining=9, limit=10`。
-- 结论：一期正式采集应优先配置 GitHub Token，避免匿名搜索配额过低；请求必须读取 `X-RateLimit-*` 响应头，并在达到限制后停止重试。
+- 限流：官网 HTML 页面没有 REST API 的 `X-RateLimit-*` 响应头，一期必须低频采集，不做高频网页抓取。
+- 结论：一期正式采集解析 GitHub 官网 Trending HTML，支持编程语言、自然语言和日/周/月范围筛选；页面结构变化时需要更新解析器。
 
 ### YouTube
 
@@ -104,7 +102,6 @@ mvn -f backend/vcoding-global-trend-monitor/pom.xml spring-boot:run
 然后通过管理员登录态调用：
 
 ```text
-POST http://localhost:8084/api/global-trend/sources/hacker-news/test
 POST http://localhost:8084/api/global-trend/sources/github/test
 POST http://localhost:8084/api/global-trend/sources/youtube/test
 ```
@@ -112,7 +109,9 @@ POST http://localhost:8084/api/global-trend/sources/youtube/test
 建议配置：
 
 ```bash
-export VCODING_GITHUB_TOKEN="..."
+export VCODING_GITHUB_TRENDING_LANGUAGE=""
+export VCODING_GITHUB_TRENDING_SPOKEN_LANGUAGE_CODE=""
+export VCODING_GITHUB_TRENDING_SINCE="daily"
 export VCODING_YOUTUBE_API_KEY="..."
 ```
 
@@ -120,7 +119,7 @@ export VCODING_YOUTUBE_API_KEY="..."
 
 ## 6. 下一步结论
 
-- Hacker News：可以进入正式 connector 开发。
-- GitHub：可以进入正式 connector 开发，但正式环境应使用 Token 并实现限流保护。
+- GitHub：可以进入正式 connector 开发，但正式环境应低频解析官网 Trending HTML，并记录页面结构变化风险。
 - YouTube：需要先配置 API Key 完成一次真实调用，再进入正式 connector 开发。
-- 三个平台正式 connector 都应输出统一的 `TrendItemDraft`，验证器不负责热点入库和热度评分。
+- Hacker News：作为二期预研记录保留，一期不提供正式 connector 和验证入口。
+- 两个一期正式 connector 都应输出统一的 `TrendItemDraft`，验证器不负责热点入库和热度评分。

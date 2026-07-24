@@ -9,6 +9,8 @@
 - [一期技术设计文档](technical-design.md)
 - [一期数据源验证记录](phase-1-source-validation.md)
 
+当前实现进度：一期正式范围已收缩为 YouTube 和 GitHub。后端已完成两个数据源的采集器契约和最小实现，支持管理员手动采集、平台内幂等更新、指标快照、热度评分、任务统计和可配置每日定时任务。YouTube 正式采集仍需配置 `VCODING_YOUTUBE_API_KEY`。Hacker News 已移出一期运行范围，历史验证结论仅作为二期预研材料保留。
+
 ## 文档职责
 
 `phase-1-requirement-analysis.md` 是一期需求分析源，维护：
@@ -40,9 +42,10 @@
 - 热点、图表、数据源和任务接口设计
 - 图表交互、可观测性和合规存储边界
 
-`phase-1-source-validation.md` 是首批数据源验证记录，维护：
+`phase-1-source-validation.md` 是数据源验证记录，维护：
 
-- Hacker News、GitHub、YouTube 的官方接口和字段口径
+- YouTube、GitHub 的一期官方接口和字段口径
+- Hacker News 的二期预研验证记录
 - 认证、限流和配置要求
 - 最小验证接口和实测结果
 - 正式 connector 开发前的结论和待办
